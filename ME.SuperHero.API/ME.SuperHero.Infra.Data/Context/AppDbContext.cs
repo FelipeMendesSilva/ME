@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ME.SuperHero.Domain.Entities;
+using ME.SuperHero.Infra.Data.EntitiesConfiguration;
+using Microsoft.EntityFrameworkCore;
 
 namespace ME.SuperHero.Infra.Data.Context
 {
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
+            : base(options) { }
+
+        public DbSet<Herois> Herois { get; set; }
+        public DbSet<HeroisSuperpoderes> HeroisSuperpoderes { get; set; }
+        public DbSet<Superpoderes> Superpoderes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-        }
+            builder.ApplyConfiguration(new HeroisConfiguration());
+            builder.ApplyConfiguration(new HeroisSuperpoderesConfiguration());
+            builder.ApplyConfiguration(new SuperpoderesConfiguration());
 
-        public DbSet<Product> Produtos { get; set; }
-        public DbSet<Cosif> ProdutosCosif { get; set; }
-        public DbSet<ManualMovement> MovimentosManuais { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.ApplyConfiguration(new ProductConfiguration());
-            modelBuilder.ApplyConfiguration(new CosifConfiguration());
-            modelBuilder.ApplyConfiguration(new ManualMovimentConfiguration());
-
-            modelBuilder.Entity<FunctionManualMovementsResult>().HasNoKey();
-
-            base.OnModelCreating(modelBuilder);
-            // Configurações adicionais
+            base.OnModelCreating(builder);
         }
     }
 }
+

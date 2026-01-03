@@ -1,12 +1,13 @@
 using ME.SuperHero.Application.Requests;
 using ME.SuperHero.Application.Responses;
+using ME.SuperHero.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace MinhaApi.Controllers
+namespace ME.SuperHero.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -22,27 +23,25 @@ namespace MinhaApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<GetHeroiResponse>> GetAll()
+        public async Task<ActionResult<IEnumerable<ResponseGetHeroi>>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return Ok();
+            var herois = await _mediatr.Send(new RequestGetAllHerois(), cancellationToken);
+            return Ok(herois);
         }
-        
-        [HttpGet("{id}")]
-        public ActionResult<GetHeroiResponse> GetById(int id)
-        {
-            //var hero = _heroes.FirstOrDefault(h => h.Id == id);
-            //if (hero == null)
-            //    return NotFound();
 
-            return Ok();
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ResponseGetHeroi>> GetByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var heroi = await _mediatr.Send(new RequestGetHeroiById(), cancellationToken);
+            return Ok(heroi);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] RequestCreateHeroi heroi, CancellationToken cancellationToken)
         {
             var createdHeroi = await _mediatr.Send(heroi, cancellationToken);
-           
-            return CreatedAtAction(nameof(GetById), new { id = 123 }, heroi);
+
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = createdHeroi }, heroi);
         }
 
         [HttpPut("{id}")]

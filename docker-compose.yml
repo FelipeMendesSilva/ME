@@ -1,0 +1,15 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: me-mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: senha
+      MYSQL_USER: usuario
+      MYSQL_PASSWORD: senha
+      MYSQL_DATABASE: Herois
+    volumes:
+      - ./data:/var/lib/mysql  # Mapeamento do volume
+      

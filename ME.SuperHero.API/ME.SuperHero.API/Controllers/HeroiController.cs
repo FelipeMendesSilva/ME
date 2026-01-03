@@ -11,7 +11,7 @@ namespace MinhaApi.Controllers
     public class HeroiController : ControllerBase
     {
         [HttpGet]
-        public ActionResult<IEnumerable<GetHeroiResponse>> Get()
+        public ActionResult<IEnumerable<GetHeroiResponse>> GetAll()
         {
             return Ok();
         }
@@ -27,11 +27,11 @@ namespace MinhaApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] RequestCreateHeroi hero)
+        public IActionResult Create([FromBody] RequestCreateHeroi heroi)
         {
             //hero.Id = _heroes.Count > 0 ? _heroes.Max(h => h.Id) + 1 : 1;
             //_heroes.Add(hero);
-            return CreatedAtAction(nameof(GetById), new { id = hero.Id }, hero);
+            return CreatedAtAction(nameof(GetById), new { id = heroi.Id }, heroi);
         }
 
         [HttpPut("{id}")]

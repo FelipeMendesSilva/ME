@@ -23,17 +23,30 @@
     <!-- Superpoderes -->
     <div class="form-group">
       <label>Superpoderes:</label>
-      <ul>
-        <li v-for="(poder, index) in heroiLocal.superpoderes" :key="index">
-          <input v-model="heroiLocal.superpoderes[index]" placeholder="Ex: Força, voo..." />
-          <button type="button" @click="removerPoder(index)">Remover</button>
+      <ul class="superpoderes-list">
+        <li v-for="(poder, index) in heroiLocal.superpoderes" :key="poder.id">
+            {{ poder.superpoder }}
+            <span class="tooltip">❓<span class="tooltip-text">{{ poder.descricao }}</span>
+            </span>
+  
+            <button type="button" @click="removerPoder(index)">Remover</button>
         </li>
-      </ul>
+      </ul>     
+          <select v-model="selectedPoder" class="dropdown">
+          <option disabled value="">Selecione um poder</option>
+            <option 
+              v-for="sp in superpoderesDisponiveis"     
+              :key="sp.id" 
+              :value="sp"
+              :title="sp.descricao" >
+              {{ sp.superpoder }}
+            </option>
+          </select>
       <button type="button" @click="adicionarPoder">Adicionar poder</button>
-    </div>
-   
-
+    </div>  
+    
     <button type="submit">Salvar</button>
+    <button type="button" @click="$emit('cancelar')">Cancelar</button>
   </form>
 </template>
 
@@ -46,24 +59,46 @@ export default {
     return {
       heroiLocal: {
         ...this.heroi,
-        superpoderes: this.heroi?.superpoderes || [] // garante array
-      }
+        superpoderes: this.heroi?.superpoderes 
+      },
+      superpoderesDisponiveis: [] // lista vinda da API
     };
   },
+  async mounted() {
+    await this.carregarSuperpoderes();
+  },
   methods: {
+    async carregarSuperpoderes() {
+      const response = await api.get("/superpoderes");
+      const poderesSelecionados = this.heroiLocal.superpoderes?.map(sp => sp.id) || []; 
+      this.superpoderesDisponiveis = response.data.filter(sp => 
+       !poderesSelecionados.includes(sp.id) );
+    },
     adicionarPoder() {
-      this.heroiLocal.superpoderes.push("");
+      if(this.selectedPoder){
+        this.heroiLocal.superpoderes.push(this.selectedPoder); 
+        this.selectedPoder = null; 
+        this.carregarSuperpoderes();
+      }
     },
     removerPoder(index) {
       this.heroiLocal.superpoderes.splice(index, 1);
     },
     async salvar() {
-      if (this.heroiLocal.id) {
-        await api.put(`/${this.heroiLocal.id}`, this.heroiLocal);
-      } else {
-        await api.post("/", this.heroiLocal);
-      }
-      this.$emit("salvar");
+    const heroiDTO = { 
+        id: this.heroiLocal.id, 
+        nome: this.heroiLocal.nome, 
+        nomeHeroi: this.heroiLocal.nomeHeroi, 
+        altura: this.heroiLocal.altura, 
+        peso: this.heroiLocal.peso, 
+        dataNascimento: this.heroiLocal.dataNascimento, 
+        superpoderes:this.heroiLocal.superpoderes?.map(sp => sp.id) || []
+        };
+      
+    await api.put(`/${this.heroiLocal.id}`, heroiDTO);
+      
+    
+    this.$emit("salvar", this.heroiLocal);
     }
   }
 };
@@ -73,22 +108,115 @@ export default {
 .heroi-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.2rem;
+  padding: 1.5rem;
+  background: #f9f9fb;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  max-width: 500px;
+  margin: auto;
+  font-family: "Segoe UI", sans-serif;
 }
+
 .form-group {
   display: flex;
   flex-direction: column;
 }
-ul {
-  list-style: none;
-  padding: 0;
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #333;
 }
-li {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+
+.form-group input,
+.form-group select {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74,144,226,0.3);
+  outline: none;
+}
+
 button {
-  margin-top: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: none;
+  background: #4a90e2;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
 }
+
+button:hover {
+  background: #357ab8;
+}
+.superpoderes-list {
+  list-style: none; /* remove os pontos */
+  padding-bottom: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.superpoderes-list li {
+  background: #f0f4ff;
+  border: 1px solid #d0d8f0;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  color: #333;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.superpoderes-list li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.superpoderes-list strong {
+  color: #4a90e2;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 8px;
+  color: #4a90e2;
+  font-weight: bold;
+}
+
+.tooltip .tooltip-text {
+  visibility: hidden;
+  width: 220px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  padding: 0.6rem;
+  position: absolute;
+  z-index: 999;
+  bottom: 125%; /* aparece acima */
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 1rem;
+}
+
+.tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+
 </style>

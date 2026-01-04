@@ -24,7 +24,8 @@ namespace ME.SuperHero.Infra.Data.EntitiesConfiguration
 
             builder.HasOne(sp => sp.Heroi)
                    .WithMany(h => h.HeroisSuperpoderes)
-                   .HasForeignKey(sp => sp.HeroiId);
+                   .HasForeignKey(sp => sp.HeroiId)
+                   .OnDelete(DeleteBehavior.Cascade); 
 
             builder.HasOne(sp => sp.Superpoder)
                    .WithMany(s => s.HeroisSuperpoderes)

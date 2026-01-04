@@ -24,7 +24,6 @@ namespace ME.SuperHero.Application.Handlers.Command
             if (heroi == null)
                 return Result.Failure("Hero not found", System.Net.HttpStatusCode.NotFound);
 
-            await _heroisSupRepository.RemoveAllPowersByHeroiIdAsync(request.Id, cancellationToken);
             await _heroisRepository.DeleteAsync(request.Id, cancellationToken);
             bool deleted = await _uow.SaveChangesAsync(cancellationToken);
 

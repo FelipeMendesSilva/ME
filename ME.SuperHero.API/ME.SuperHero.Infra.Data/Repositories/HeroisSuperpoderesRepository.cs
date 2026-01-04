@@ -25,11 +25,5 @@ namespace ME.SuperHero.Infra.Data.Repositories
             var success = await _context.HeroisSuperpoderes.Where(hs => hs.SuperpoderId == superpoderId).ExecuteDeleteAsync(cancellationToken);
             return success > 0;
         }
-
-        public async Task<bool> RemoveAllPowersByHeroiIdAsync(int heroiId, CancellationToken cancellationToken)
-        {
-            var success = await _context.HeroisSuperpoderes.Where(hs => hs.HeroiId == heroiId).ExecuteDeleteAsync(cancellationToken);
-            return success > 0;
-        }
     }
 }

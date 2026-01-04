@@ -6,6 +6,5 @@ namespace ME.SuperHero.Domain.Interfaces
     {
         Task AddPowerAsync(HeroisSuperpoderes hs, CancellationToken cancellationToken);
         Task<bool> RemovePowerBySuperpoderIdAsync(int superpoderId, CancellationToken cancellationToken);
-        Task<bool> RemoveAllPowersByHeroiIdAsync(int heroiId, CancellationToken cancellationToken);
     }
 }

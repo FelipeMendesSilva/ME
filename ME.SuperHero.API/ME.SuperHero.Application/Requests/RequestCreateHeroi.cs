@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using ME.SuperHero.Domain.Result;
+using MediatR;
 
 namespace ME.SuperHero.Application.Requests
 {
-    public class RequestCreateHeroi : IRequest<int>
+    public class RequestCreateHeroi : IRequest<Result>
     {
         public required string Nome { get; set; }
         public required string NomeHeroi { get; set; }

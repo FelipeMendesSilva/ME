@@ -2,12 +2,12 @@
 {
     public class Herois
     {
-        public int Id { get; set; } = 0;
-        public string Nome { get; set; }
-        public string NomeHeroi { get; set; }        
-        public DateTime? DataNascimento { get; set; }
-        public double Altura { get; set; }
-        public double Peso { get; set; }
+        public int Id { get; private set; } = 0;
+        public string Nome { get; private set; }
+        public string NomeHeroi { get; private set; }        
+        public DateTime? DataNascimento { get; private set; }
+        public double Altura { get; private set; }
+        public double Peso { get; private set; }
 
         public virtual IEnumerable<HeroisSuperpoderes> HeroisSuperpoderes { get; set; }
 
@@ -26,5 +26,12 @@
              Altura = altura;
              Peso = peso;
          }
+
+        public void ChangeNome(string novoNome) => Nome = novoNome; 
+        public void ChangeNomeHeroi(string novoNomeHeroi) => NomeHeroi = novoNomeHeroi; 
+        public void ChangeDataNascimento(DateTime? novaData) => DataNascimento = novaData; 
+        public void ChangeAltura(double novaAltura) => Altura = novaAltura; 
+        public void ChangePeso(double novoPeso) => Peso = novoPeso;
     }
 }
+

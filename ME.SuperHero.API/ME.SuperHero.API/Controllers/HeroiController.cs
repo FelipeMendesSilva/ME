@@ -1,11 +1,7 @@
 using ME.SuperHero.Application.Requests;
 using ME.SuperHero.Application.Responses;
-using ME.SuperHero.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace ME.SuperHero.API.Controllers
 {
@@ -25,48 +21,69 @@ namespace ME.SuperHero.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ResponseGetHeroi>>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var herois = await _mediatr.Send(new RequestGetAllHerois(), cancellationToken);
-            return Ok(herois);
+            var result = await _mediatr.Send(new RequestGetAllHerois(), cancellationToken);
+            if (!result.IsSuccess())
+                return NotFound(result.ErrorMessage);
+            
+            return Ok(result.Data);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ResponseGetHeroi>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var heroi = await _mediatr.Send(new RequestGetHeroiById(), cancellationToken);
-            return Ok(heroi);
+            var result = await _mediatr.Send(new RequestGetHeroiById(id), cancellationToken);
+            if (!result.IsSuccess())
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Data);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] RequestCreateHeroi heroi, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAsync([FromBody] RequestCreateHeroi request, CancellationToken cancellationToken)
         {
-            var createdHeroi = await _mediatr.Send(heroi, cancellationToken);
+            var result = await _mediatr.Send(request, cancellationToken);
+            if (!result.IsSuccess())
+                return BadRequest(result.ErrorMessage);
 
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = createdHeroi }, heroi);
+            return Created();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] RequestUpdateHeroi heroAtualizado, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAsync([FromBody] RequestUpdateHeroi request, CancellationToken cancellationToken)
         {
-            //var hero = _heroes.FirstOrDefault(h => h.Id == id);
-            //if (hero == null)
-            //    return NotFound();
-
-            //hero.Nome = heroAtualizado.Nome;
-            //hero.Poder = heroAtualizado.Poder;
-            //hero.Cidade = heroAtualizado.Cidade;
-
-            return NoContent();
+            var result = await _mediatr.Send(request, cancellationToken);
+            if (!result.IsSuccess())
+            {
+                if(result.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return NotFound(result.ErrorMessage);
+                return BadRequest(result.ErrorMessage);
+            }
+                
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            //var hero = _heroes.FirstOrDefault(h => h.Id == id);
-            //if (hero == null)
-            //    return NotFound();
+            var result = await _mediatr.Send(new RequestDeleteHeroi(id), cancellationToken);
+            if (!result.IsSuccess())
+            {
+                if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return NotFound(result.ErrorMessage);
+                return BadRequest(result.ErrorMessage);
+            }
 
-            //_heroes.Remove(hero);
-            return NoContent();
+            return Ok();
+        }
+
+        [HttpGet("superpoderes")]
+        public async Task<ActionResult<IEnumerable<ResponseGetHeroi>>> GetAllSuperpoderesAsync(CancellationToken cancellationToken)
+        {
+            var result = await _mediatr.Send(new RequestGetSuperpoderes(), cancellationToken);
+            if (!result.IsSuccess())
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Data);
         }
     }
 }

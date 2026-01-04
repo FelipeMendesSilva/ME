@@ -18,21 +18,44 @@ namespace ME.SuperHero.Infra.Data.Repositories
         {
             return await _context.Herois
                 .Include(x => x.HeroisSuperpoderes)
+                .ThenInclude(hs => hs.Superpoder)
                 .FirstOrDefaultAsync<Herois>(x => x.Id == id, cancellationToken);
         }
 
-        public async Task<bool> CreateAsync(Herois heroi, CancellationToken cancellationToken)
+        public async Task<bool> ExistsHeroiByNameAsync(string nomeHeroi, CancellationToken cancellationToken)
+        => await _context.Herois.AnyAsync(x => x.NomeHeroi == nomeHeroi, cancellationToken);
+
+        public async Task CreateAsync(Herois heroi, CancellationToken cancellationToken)
         {
             await _context.Herois.AddAsync(heroi, cancellationToken);
-            var success = await _context.SaveChangesAsync(cancellationToken);
-            return success > 0;
+            await _context.SaveChangesAsync(cancellationToken);
+            return;
         }
 
-        public async Task<bool> AddPowersAsync(HeroisSuperpoderes hs, CancellationToken cancellationToken)
+        public async Task AddPowersAsync(HeroisSuperpoderes hs, CancellationToken cancellationToken)
         {
             await _context.HeroisSuperpoderes.AddAsync(hs, cancellationToken);
-            var success = await _context.SaveChangesAsync(cancellationToken);
-            return success > 0;
+            return;
         }
+
+        public async Task UpdateAsync(Herois heroi, CancellationToken cancellationToken)
+        {
+            _context.Herois.Update(heroi);
+            return;
+        }
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+        {
+            var heroi = await _context.Herois
+                .FirstOrDefaultAsync(h => h.Id == id, cancellationToken);
+
+            if (heroi == null)
+                return false;
+
+            _context.Herois.Remove(heroi);
+
+            return true;
+        }
+
     }
 }

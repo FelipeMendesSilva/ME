@@ -1,23 +1,20 @@
 ﻿using ME.SuperHero.Application.Requests;
 using ME.SuperHero.Application.Responses;
-using ME.SuperHero.Domain.Entities;
-using ME.SuperHero.Domain.Interfaces;
+using ME.SuperHero.Domain.Result;
 using ME.SuperHero.Infra.Data.Context;
 using MediatR;
-using MediatR.NotificationPublishers;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace ME.SuperHero.Application.Handlers.Command
 {
-    public class GetAllHeroisQueryHandler : IRequestHandler<RequestGetAllHerois, List<ResponseGetHeroi>>
+    public class GetAllHeroisQueryHandler : IRequestHandler<RequestGetAllHerois, Result>
     {
         private readonly AppDbContext _dbContext;
         public GetAllHeroisQueryHandler(AppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
-        public async Task<List<ResponseGetHeroi>> Handle(RequestGetAllHerois request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(RequestGetAllHerois request, CancellationToken cancellationToken)
         {
             var responseList = await _dbContext.Herois
                 .Include(h => h.HeroisSuperpoderes)
@@ -31,7 +28,7 @@ namespace ME.SuperHero.Application.Handlers.Command
                     Altura = h.Altura,
                     Peso = h.Peso,
                     Superpoderes = h.HeroisSuperpoderes
-                        .Select(hs => new SuperpoderesResponse
+                        .Select(hs => new ResponseSuperpoderes
                         {
                             Id = hs.Superpoder.Id,
                             Superpoder = hs.Superpoder.Superpoder,
@@ -39,9 +36,14 @@ namespace ME.SuperHero.Application.Handlers.Command
                         })
                         .ToList()
                 })
-                .ToListAsync(cancellationToken);               
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
 
-            return responseList;
+            if (responseList.Any())
+                return Result.Success(responseList);
+            else
+                return Result.Failure("Hero not found", System.Net.HttpStatusCode.NotFound);
+
         }
     }
 }

@@ -16,6 +16,9 @@ namespace ME.SuperHero.Infra.IoC
                    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 43))));
 
             services.AddScoped<IHeroisRepository, HeroisRepository>();
+            services.AddScoped<IHeroisSuperpoderesRepository, HeroisSuperpoderesRepository>();
+            services.AddScoped<ISuperpoderesRepository, SuperpoderesRepository>();
+            services.AddScoped<IUow, Uow>();
         }
     }
 }

@@ -1,21 +1,23 @@
 ﻿using ME.SuperHero.Application.Requests;
 using ME.SuperHero.Domain.Entities;
 using ME.SuperHero.Domain.Interfaces;
+using ME.SuperHero.Domain.Result;
 using MediatR;
 
 namespace ME.SuperHero.Application.Handlers.Command
 {
-    public class CreateHeroiCommandHandler : IRequestHandler<RequestCreateHeroi, int>
+    public class CreateHeroiCommandHandler : IRequestHandler<RequestCreateHeroi, Result>
     {
         private readonly IHeroisRepository _heroisRepository;
-        public CreateHeroiCommandHandler(IHeroisRepository heroisRepository)
+        private readonly IUow _uow;
+
+        public CreateHeroiCommandHandler(IHeroisRepository heroisRepository, IUow uow)
         {
             _heroisRepository = heroisRepository;
+            _uow = uow;
         }
-        public async Task<int> Handle(RequestCreateHeroi request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(RequestCreateHeroi request, CancellationToken cancellationToken)
         {
-
-
             var heroi = new Herois(
                 request.Nome,
                 request.NomeHeroi,
@@ -24,24 +26,25 @@ namespace ME.SuperHero.Application.Handlers.Command
                 request.Peso
                 );
 
-            bool saved = await _heroisRepository.CreateAsync(heroi, cancellationToken);
+            await _heroisRepository.CreateAsync(heroi, cancellationToken);
+
+            foreach (var poderId in request.Superpoderes)
+            {
+                var vinculo = new HeroisSuperpoderes
+                {
+                    HeroiId = heroi.Id, // usa o Id gerado
+                    SuperpoderId = poderId
+                };
+
+                await _heroisRepository.AddPowersAsync(vinculo, cancellationToken);
+            }
+
+            bool saved = await _uow.SaveChangesAsync(cancellationToken);
 
             if (saved)
-            {
-                foreach (var poderId in request.Superpoderes)
-                {
-                    var vinculo = new HeroisSuperpoderes
-                    {
-                        HeroiId = heroi.Id, // usa o Id gerado
-                        SuperpoderId = poderId
-                    };
-
-                    await _heroisRepository.AddPowersAsync(vinculo, cancellationToken);
-
-                }
-            }
-            //return 
-            return heroi.Id;
+                return Result.Success("Created", System.Net.HttpStatusCode.Created);
+            else
+                return Result.Failure("Creating not completed", System.Net.HttpStatusCode.BadRequest);
         }
     }
 }

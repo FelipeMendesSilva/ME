@@ -28,7 +28,7 @@ namespace ME.SuperHero.Application.Handlers.Command
                 return Result.Failure("Hero not found", System.Net.HttpStatusCode.NotFound);
 
             if (heroi?.NomeHeroi != request.NomeHeroi && await _heroisRepository.ExistsHeroiByNameAsync(request.NomeHeroi, cancellationToken))
-                return Result.Failure("Name already exists", System.Net.HttpStatusCode.BadRequest);
+                return Result.Failure("NomeHeroi already exists", System.Net.HttpStatusCode.BadRequest);
 
 
             heroi.ChangeNome(request.Nome);
@@ -37,21 +37,10 @@ namespace ME.SuperHero.Application.Handlers.Command
             heroi.ChangeAltura(request.Altura);
             heroi.ChangePeso(request.Peso);
 
-
             await _heroisRepository.UpdateAsync(heroi, cancellationToken);
-            await _uow.SaveChangesAsync(cancellationToken);
-            await _heroisSupRepository.RemoveAllPowersAsync(heroi.Id, cancellationToken);
 
-            foreach (var superpodereId in request.Superpoderes)
-            {
-                var vinculo = new HeroisSuperpoderes
-                {
-                    HeroiId = heroi.Id,
-                    SuperpoderId = superpodereId
-                };
+            await UpdateHeroiSuperpoderesAsync(heroi, request, cancellationToken);
 
-                await _heroisRepository.AddPowersAsync(vinculo, cancellationToken);
-            }
             bool updated = await _uow.SaveChangesAsync(cancellationToken);
 
             if (updated)
@@ -59,6 +48,28 @@ namespace ME.SuperHero.Application.Handlers.Command
             else
                 return Result.Failure("Updating not completed", System.Net.HttpStatusCode.BadRequest);
 
+        }
+
+        private async Task UpdateHeroiSuperpoderesAsync(Herois heroi, RequestUpdateHeroi request, CancellationToken cancellationToken)
+        {
+            var powerToAdd = request.Superpoderes.Except(heroi.GetSuperpoderesIds()).ToList();
+            var powerToRemove = heroi.GetSuperpoderesIds().Except(request.Superpoderes).ToList();
+
+            foreach (var superpodereId in powerToAdd)
+            {
+                var vinculo = new HeroisSuperpoderes
+                {
+                    HeroiId = heroi.Id,
+                    SuperpoderId = superpodereId
+                };
+
+                await _heroisSupRepository.AddPowerAsync(vinculo, cancellationToken);
+            }
+
+            foreach (var superpodereId in powerToRemove)
+            {
+                await _heroisSupRepository.RemovePowerBySuperpoderIdAsync(superpodereId, cancellationToken);
+            }
         }
     }
 }

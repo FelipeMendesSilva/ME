@@ -4,7 +4,7 @@
     {
         public int Id { get; private set; } = 0;
         public string Nome { get; private set; }
-        public string NomeHeroi { get; private set; }        
+        public string NomeHeroi { get; private set; }
         public DateTime? DataNascimento { get; private set; }
         public double Altura { get; private set; }
         public double Peso { get; private set; }
@@ -19,19 +19,21 @@
         DateTime? dataNascimento,
         double altura,
         double peso)
-         {
-             Nome = nome;
-             NomeHeroi = nomeHeroi;
-             DataNascimento = dataNascimento;
-             Altura = altura;
-             Peso = peso;
-         }
+        {
+            Nome = nome;
+            NomeHeroi = nomeHeroi;
+            DataNascimento = dataNascimento;
+            Altura = altura;
+            Peso = peso;
+        }
 
-        public void ChangeNome(string novoNome) => Nome = novoNome; 
-        public void ChangeNomeHeroi(string novoNomeHeroi) => NomeHeroi = novoNomeHeroi; 
-        public void ChangeDataNascimento(DateTime? novaData) => DataNascimento = novaData; 
-        public void ChangeAltura(double novaAltura) => Altura = novaAltura; 
+        public void ChangeNome(string novoNome) => Nome = novoNome;
+        public void ChangeNomeHeroi(string novoNomeHeroi) => NomeHeroi = novoNomeHeroi;
+        public void ChangeDataNascimento(DateTime? novaData) => DataNascimento = novaData;
+        public void ChangeAltura(double novaAltura) => Altura = novaAltura;
         public void ChangePeso(double novoPeso) => Peso = novoPeso;
+
+        public List<int> GetSuperpoderesIds() => HeroisSuperpoderes.Select(hs => hs.SuperpoderId).ToList();
     }
 }
 

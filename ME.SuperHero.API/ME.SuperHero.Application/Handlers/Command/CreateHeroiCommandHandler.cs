@@ -9,15 +9,20 @@ namespace ME.SuperHero.Application.Handlers.Command
     public class CreateHeroiCommandHandler : IRequestHandler<RequestCreateHeroi, Result>
     {
         private readonly IHeroisRepository _heroisRepository;
+        private readonly IHeroisSuperpoderesRepository _heroisSupRepository;
         private readonly IUow _uow;
 
-        public CreateHeroiCommandHandler(IHeroisRepository heroisRepository, IUow uow)
+        public CreateHeroiCommandHandler(IHeroisRepository heroisRepository, IHeroisSuperpoderesRepository heroisSupRepository, IUow uow)
         {
             _heroisRepository = heroisRepository;
+            _heroisSupRepository = heroisSupRepository;
             _uow = uow;
         }
         public async Task<Result> Handle(RequestCreateHeroi request, CancellationToken cancellationToken)
         {
+            if (await _heroisRepository.ExistsHeroiByNameAsync(request.NomeHeroi, cancellationToken))
+                return Result.Failure("NomeHeroi already exists", System.Net.HttpStatusCode.BadRequest);
+
             var heroi = new Herois(
                 request.Nome,
                 request.NomeHeroi,
@@ -36,7 +41,7 @@ namespace ME.SuperHero.Application.Handlers.Command
                     SuperpoderId = poderId
                 };
 
-                await _heroisRepository.AddPowersAsync(vinculo, cancellationToken);
+                await _heroisSupRepository.AddPowerAsync(vinculo, cancellationToken);
             }
 
             bool saved = await _uow.SaveChangesAsync(cancellationToken);

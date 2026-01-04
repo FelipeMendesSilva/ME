@@ -26,6 +26,6 @@ namespace ME.SuperHero.Domain.Result
         public static Result Failure(string errorMessage, HttpStatusCode statusCode)
             => new Result(statusCode, errorMessage);
 
-        public bool IsSuccess() => StatusCode == HttpStatusCode.OK;
+        public bool IsSuccess() => StatusCode == HttpStatusCode.OK || StatusCode == HttpStatusCode.Created;
     }
 }

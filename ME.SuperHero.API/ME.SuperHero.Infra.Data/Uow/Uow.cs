@@ -1,6 +1,5 @@
 using ME.SuperHero.Domain.Interfaces;
 using ME.SuperHero.Infra.Data.Context;
-using System;
 
 public class Uow : IUow
 {

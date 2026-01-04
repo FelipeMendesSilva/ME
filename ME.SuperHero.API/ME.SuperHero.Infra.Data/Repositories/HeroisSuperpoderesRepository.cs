@@ -17,10 +17,16 @@ namespace ME.SuperHero.Infra.Data.Repositories
         public async Task AddPowerAsync(HeroisSuperpoderes hs, CancellationToken cancellationToken)
         {
             await _context.HeroisSuperpoderes.AddAsync(hs, cancellationToken);
-            return ;
+            return;
         }
 
-        public async Task<bool> RemoveAllPowersAsync(int heroiId, CancellationToken cancellationToken)
+        public async Task<bool> RemovePowerBySuperpoderIdAsync(int superpoderId, CancellationToken cancellationToken)
+        {
+            var success = await _context.HeroisSuperpoderes.Where(hs => hs.SuperpoderId == superpoderId).ExecuteDeleteAsync(cancellationToken);
+            return success > 0;
+        }
+
+        public async Task<bool> RemoveAllPowersByHeroiIdAsync(int heroiId, CancellationToken cancellationToken)
         {
             var success = await _context.HeroisSuperpoderes.Where(hs => hs.HeroiId == heroiId).ExecuteDeleteAsync(cancellationToken);
             return success > 0;

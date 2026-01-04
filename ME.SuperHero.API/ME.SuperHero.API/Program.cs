@@ -1,4 +1,3 @@
-using ME.SuperHero.API.Filters;
 using ME.SuperHero.API.IoC;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +19,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseExceptionHandler("/error");
 
 app.UseHttpsRedirection();
 

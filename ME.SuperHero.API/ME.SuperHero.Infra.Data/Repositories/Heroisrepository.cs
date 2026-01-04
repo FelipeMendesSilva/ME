@@ -32,12 +32,6 @@ namespace ME.SuperHero.Infra.Data.Repositories
             return;
         }
 
-        public async Task AddPowersAsync(HeroisSuperpoderes hs, CancellationToken cancellationToken)
-        {
-            await _context.HeroisSuperpoderes.AddAsync(hs, cancellationToken);
-            return;
-        }
-
         public async Task UpdateAsync(Herois heroi, CancellationToken cancellationToken)
         {
             _context.Herois.Update(heroi);

@@ -17,7 +17,6 @@ namespace ME.SuperHero.Infra.IoC
 
             services.AddScoped<IHeroisRepository, HeroisRepository>();
             services.AddScoped<IHeroisSuperpoderesRepository, HeroisSuperpoderesRepository>();
-            services.AddScoped<ISuperpoderesRepository, SuperpoderesRepository>();
             services.AddScoped<IUow, Uow>();
         }
     }

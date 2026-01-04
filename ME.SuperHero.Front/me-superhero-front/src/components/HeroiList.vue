@@ -3,6 +3,9 @@
     <!-- Lista só aparece se não estiver editando -->
     <div v-if="!heroiSelecionado">
       <h2>Lista de Heróis</h2>
+       <button @click="novoHeroi" class="btn-adicionar">
+            ➕ Adicionar Herói
+       </button>
       <ul class="herois-list">
         <li v-for="heroi in herois" :key="heroi.id" class="item-herois-list">
           <div class="heroi-info">
@@ -70,10 +73,14 @@ export default {
     editarHeroi(heroi) {
       this.heroiSelecionado = { ...heroi };
     },
-    atualizarHeroiNaLista(heroiAtualizado) { 
+    novoHeroi() { 
+        this.heroiSelecionado = { id: 0, nome: '', altura: '', peso: '', superpoderes: []} 
+    },
+    async atualizarHeroiNaLista(heroiAtualizado) { 
         const index = this.herois.findIndex(h => h.id === heroiAtualizado.id); 
         if (index !== -1) { this.herois.splice(index, 1, heroiAtualizado);} 
-        else { this.herois.push(heroiAtualizado);} 
+        else { this.herois.push(heroiAtualizado);}
+        await this.carregarHerois();
         this.heroiSelecionado = null; // fecha edição 
     },
     cancelarEdicao() 
@@ -228,6 +235,10 @@ export default {
 
 .btn.editar {
   background: #4a90e2;
+  color: #fff;
+}
+.btn-adicionar{
+  background: #23a234ff;
   color: #fff;
 }
 

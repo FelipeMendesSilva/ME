@@ -46,7 +46,7 @@
     </div>  
     
     <button type="submit">Salvar</button>
-    <button type="button" @click="$emit('cancelar')">Cancelar</button>
+    <button type="button" @click="$emit('cancelar')" class="btn-cancelar">Cancelar</button>
   </form>
 </template>
 
@@ -94,9 +94,13 @@ export default {
         dataNascimento: this.heroiLocal.dataNascimento, 
         superpoderes:this.heroiLocal.superpoderes?.map(sp => sp.id) || []
         };
-      
-    await api.put(`/${this.heroiLocal.id}`, heroiDTO);
-      
+      if (this.heroiLocal.id) { 
+         await api.put(`/${this.heroiLocal.id}`, heroiDTO); 
+      } 
+      else { 
+        const response = await api.post(`/`, heroiDTO); 
+        this.heroiLocal.id = response.data.id; 
+      }
     
     this.$emit("salvar", this.heroiLocal);
     }
@@ -106,13 +110,13 @@ export default {
 
 <style scoped>
 .heroi-form {
+    width:640px;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
   padding: 1.5rem;
   background: #f9f9fb;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  max-width: 500px;
   margin: auto;
   font-family: "Segoe UI", sans-serif;
 }
@@ -153,6 +157,14 @@ button {
   transition: background 0.2s;
 }
 
+.btn-cancelar{
+    background: #e94e4e;
+  color: #fff;
+}
+
+.btn-cancelar:hover {
+  background: #c43c3c;
+}
 button:hover {
   background: #357ab8;
 }

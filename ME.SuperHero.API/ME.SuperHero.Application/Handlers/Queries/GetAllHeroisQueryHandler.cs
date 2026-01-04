@@ -16,7 +16,6 @@ namespace ME.SuperHero.Application.Handlers.Command
         }
         public async Task<Result> Handle(RequestGetAllHerois request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
             var responseList = await _dbContext.Herois
                 .Include(h => h.HeroisSuperpoderes)
                 .ThenInclude(hs => hs.Superpoder)

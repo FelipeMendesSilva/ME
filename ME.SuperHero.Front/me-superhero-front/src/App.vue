@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>CRUD de Heróis 🦸‍♂️</h1>
+    <h1>Projeto SUPERHERO</h1>
     <HeroiList />
   </div>
 </template>

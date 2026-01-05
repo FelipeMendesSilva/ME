@@ -15,7 +15,7 @@
           <div class="heroi-info">
             <h3>{{ heroi.nomeHeroi }}</h3>
             <p><strong>Nome real:</strong> {{ heroi.nome }}</p>
-            <p><strong>Data de nascimento:</strong> {{ new Date(heroi.dataNascimento).toLocaleDateString() }}</p>
+            <p><strong>Data de nascimento:</strong> {{ formatarData(heroi.dataNascimento) }}</p>
             <p><strong>Altura:</strong> {{ heroi.altura }} m</p>
             <p><strong>Peso:</strong> {{ heroi.peso }} kg</p>
           </div>
@@ -89,11 +89,7 @@ export default {
           if (error.response && error.response.status === 404) {
             this.mostrarPopup = true;
             this.popupMensagem = "Lista vazia";
-          }
-          else if (error.response.status === 400) {
-            this.mostrarPopup = true;             
-            this.popupMensagem = error.response.data || "Erro de requisição";
-         }
+          }          
           else {
             console.error("Erro ao carregar heróis", error);
           }
@@ -115,6 +111,11 @@ export default {
     cancelarEdicao() 
     { 
         this.heroiSelecionado = null; // volta para lista 
+    },
+    formatarData(data) {
+    if (!data) return ""; // ou "N/A"
+        const d = new Date(data);
+        return isNaN(d.getTime()) ? "" : d.toLocaleDateString("pt-BR");
     },
     async deletarHeroi(id) {
       await api.delete(`/${id}`);
@@ -241,7 +242,7 @@ export default {
 
 .heroi-info >h3 {
     padding-bottom:30px;     
-  color: #346194ff;
+  color: #373737ff;
 }
 
 .nome-real {

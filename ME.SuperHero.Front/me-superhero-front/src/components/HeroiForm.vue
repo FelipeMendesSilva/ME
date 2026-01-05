@@ -104,7 +104,9 @@ export default {
         nomeHeroi: this.heroiLocal.nomeHeroi, 
         altura: this.heroiLocal.altura, 
         peso: this.heroiLocal.peso, 
-        dataNascimento: this.heroiLocal.dataNascimento, 
+        dataNascimento: (() => { 
+            const d = new Date(this.heroiLocal.dataNascimento); 
+            return isNaN(d.getTime()) ? null : this.heroiLocal.dataNascimento; })(),
         superpoderes:this.heroiLocal.superpoderes?.map(sp => sp.id) || []
         };
       if (this.heroiLocal.id) { 

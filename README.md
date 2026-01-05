@@ -19,6 +19,7 @@ Na raiz do projeto você encontrará:
 ├── me.superhero.front      # Projeto do front-end em Vue.js
 └── data                 # Pasta que guarda os dados do banco MySQL
 
+
 ---
 
 ## 🚀 Como executar
@@ -40,16 +41,14 @@ A página do Swagger da API será aberta automaticamente.
 
 A página do Front-end Vue também será aberta no navegador.
 
-🌐 Acesso às aplicações  
+🌐 Acesso às aplicações
 Swagger (API .NET 8) → documentação e testes dos endpoints.
 
 Front-end Vue → interface para cadastro e consulta de super-heróis.
 
-⚙️ Observações importantes  
+⚙️ Observações importantes
 É necessário aguardar o carregamento completo das aplicações antes de utilizá-las.
 
 Todos os serviços rodam em containers Docker, sem necessidade de instalação manual de dependências.
 
 Os dados persistidos ficam armazenados na pasta data (volume do MySQL).
-
-

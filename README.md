@@ -1,13 +1,12 @@
 # 🦸‍♂️ Projeto SuperHero
 
+O projeto foi desenvolvido para demonstrar uma arquitetura moderna de aplicações web, integrando front-end, back-end e banco de dados em um ambiente containerizado, facilitando a execução e portabilidade.
 Este projeto é uma solução completa de **cadastro de super-heróis**, composta por:
 
 - **Front-end** em [Vue.js](https://vuejs.org/)  
 - **API** em [.NET 8](https://dotnet.microsoft.com/)  
 - **Banco de dados** [MySQL](https://www.mysql.com/)  
 - Orquestração com **Docker** e **Docker Compose**
-
-O projeto foi desenvolvido para demonstrar uma arquitetura moderna de aplicações web, integrando front-end, back-end e banco de dados em um ambiente containerizado, facilitando a execução e portabilidade.
 
 ---
 
@@ -19,8 +18,6 @@ Na raiz do projeto você encontrará:
 ├── me.superhero.api          # Projeto da API em .NET 8
 ├── me.superhero.front      # Projeto do front-end em Vue.js
 └── data                 # Pasta que guarda os dados do banco MySQL
-
-Código
 
 ---
 

@@ -17,7 +17,6 @@ export default {
 body {
   display: flex;
   justify-content: center; /* centraliza horizontalmente */
-  align-items: center;     /* centraliza verticalmente */
   min-height: 100vh;       /* ocupa toda a altura da tela */
   margin: 0;               /* remove margens padrão */
 }

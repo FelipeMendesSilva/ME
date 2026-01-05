@@ -6,6 +6,10 @@
        <button @click="novoHeroi" class="btn-adicionar">
             ➕ Adicionar Herói
        </button>
+       <div v-if="mostrarPopup" class="popup">
+            <p>{{ popupMensagem }}</p>
+            <button @click="mostrarPopup = false">Fechar</button>
+        </div>
       <ul class="herois-list">
         <li v-for="heroi in herois" :key="heroi.id" class="item-herois-list">
           <div class="heroi-info">
@@ -58,7 +62,9 @@ export default {
   data() {
     return {
       herois: [],
-      heroiSelecionado: null
+      heroiSelecionado: null,
+      mostrarPopup: false,
+      popupMensagem: ""
     };
   },
   async mounted() {
@@ -66,9 +72,32 @@ export default {
   },
   methods: {
     async carregarHerois() {
-      const response = await api.get("/");
-      this.herois = response.data;
-      this.heroiSelecionado = null;
+        try {
+           const response = await api.get("/");
+
+           if (!response.data || response.data.length === 0) {
+              // dispara popup de lista vazia
+             this.mostrarPopup = true;
+             this.popupMensagem = "Lista vazia";
+           } 
+           else {
+                this.herois = response.data;
+                this.heroiSelecionado = null;
+            }
+        } 
+        catch (error) {
+          if (error.response && error.response.status === 404) {
+            this.mostrarPopup = true;
+            this.popupMensagem = "Lista vazia";
+          }
+          else if (error.response.status === 400) {
+            this.mostrarPopup = true;             
+            this.popupMensagem = error.response.data || "Erro de requisição";
+         }
+          else {
+            console.error("Erro ao carregar heróis", error);
+          }
+        }
     },
     editarHeroi(heroi) {
       this.heroiSelecionado = { ...heroi };
@@ -89,6 +118,8 @@ export default {
     },
     async deletarHeroi(id) {
       await api.delete(`/${id}`);
+      this.herois = this.herois.filter(h => h.id !== id); 
+      this.heroiSelecionado = null;
       await this.carregarHerois();
     }
   }
@@ -254,5 +285,68 @@ export default {
 .btn.excluir:hover {
   background: #c43c3c;
 }
+
+/* Fundo escurecido atrás do popup */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+}
+
+/* Container do popup */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(400px, 90vw);
+  transform: translate(-50%, -50%);
+  background: #bfc1c2ff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 1000;
+  padding: 20px;
+  text-align: center;
+  animation: fadeInScale 0.25s ease;
+}
+
+/* Texto da mensagem */
+.popup p {
+  margin-bottom: 16px;
+  font-size: 15px;
+  color: #374151;
+  line-height: 1.4;
+}
+
+/* Botão dentro do popup */
+.popup button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popup button:hover {
+  background: #1e4fd6;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+/* Animação de entrada */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 
 </style>

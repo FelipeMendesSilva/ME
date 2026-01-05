@@ -25,11 +25,10 @@ namespace ME.SuperHero.Infra.Data.Repositories
         public async Task<bool> ExistsHeroiByNameAsync(string nomeHeroi, CancellationToken cancellationToken)
         => await _context.Herois.AnyAsync(x => x.NomeHeroi == nomeHeroi, cancellationToken);
 
-        public async Task CreateAsync(Herois heroi, CancellationToken cancellationToken)
+        public async Task<bool> CreateAsync(Herois heroi, CancellationToken cancellationToken)
         {
             await _context.Herois.AddAsync(heroi, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-            return;
+            return await _context.SaveChangesAsync(cancellationToken) > 0;
         }
 
         public async Task UpdateAsync(Herois heroi, CancellationToken cancellationToken)

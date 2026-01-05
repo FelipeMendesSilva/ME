@@ -31,7 +31,7 @@ namespace ME.SuperHero.Application.Handlers.Command
                 request.Peso
                 );
 
-            await _heroisRepository.CreateAsync(heroi, cancellationToken);
+            bool saved = await _heroisRepository.CreateAsync(heroi, cancellationToken);
 
             foreach (var poderId in request.Superpoderes)
             {
@@ -44,7 +44,7 @@ namespace ME.SuperHero.Application.Handlers.Command
                 await _heroisSupRepository.AddPowerAsync(vinculo, cancellationToken);
             }
 
-            bool saved = await _uow.SaveChangesAsync(cancellationToken);
+            await _uow.SaveChangesAsync(cancellationToken);
 
             if (saved)
                 return Result.Success("Created", System.Net.HttpStatusCode.Created);

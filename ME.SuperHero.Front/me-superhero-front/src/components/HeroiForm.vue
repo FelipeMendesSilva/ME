@@ -1,5 +1,9 @@
 <template>
   <form @submit.prevent="salvar" class="heroi-form">
+        <div v-if="mostrarPopup" class="popup">
+            <p>{{ popupMensagem }}</p>
+            <button @click="mostrarPopup = false">Fechar</button>
+        </div>
     <div class="form-group">
       <label for="nome">Nome real:</label>
       <input id="nome" v-model="heroiLocal.nome" type="text" placeholder="Ex: Bruce Wayne" />
@@ -18,6 +22,11 @@
     <div class="form-group">
       <label for="peso">Peso (kg):</label>
       <input id="peso" v-model.number="heroiLocal.peso" type="number" step="0.1" placeholder="Ex: 95" />
+    </div>
+
+    <div class="form-group">
+    <label for="dataNascimento">Data de Nascimento:</label>
+    <input id="dataNascimento" v-model="heroiLocal.dataNascimento" type="date"  placeholder="Ex: 1990-10-20"/>
     </div>
 
     <!-- Superpoderes -->
@@ -59,9 +68,12 @@ export default {
     return {
       heroiLocal: {
         ...this.heroi,
+        dataNascimento: this.heroi?.dataNascimento ? new Date(this.heroi.dataNascimento).toISOString().split("T")[0] : "",
         superpoderes: this.heroi?.superpoderes 
       },
-      superpoderesDisponiveis: [] // lista vinda da API
+      superpoderesDisponiveis: [],
+      mostrarPopup: false,
+      popupMensagem: ""
     };
   },
   async mounted() {
@@ -85,6 +97,7 @@ export default {
       this.heroiLocal.superpoderes.splice(index, 1);
     },
     async salvar() {
+    
     const heroiDTO = { 
         id: this.heroiLocal.id, 
         nome: this.heroiLocal.nome, 
@@ -95,14 +108,40 @@ export default {
         superpoderes:this.heroiLocal.superpoderes?.map(sp => sp.id) || []
         };
       if (this.heroiLocal.id) { 
-         await api.put(`/${this.heroiLocal.id}`, heroiDTO); 
+        try
+        {
+            await api.put(`/${this.heroiLocal.id}`, heroiDTO);
+            this.$emit("salvar", this.heroiLocal); 
+         }
+        catch(error) {
+            console.log("Entrou no catch");
+            if (error.response && error.response.status === 400) {
+                const mensagem = error.response.data || "Erro inesperado"; 
+                this.mostrarPopup = true; 
+                this.popupMensagem = mensagem;
+            }          
+            else {
+            console.error("Erro ao carregar heróis", error);
+          }    
+        }
       } 
       else { 
-        const response = await api.post(`/`, heroiDTO); 
-        this.heroiLocal.id = response.data.id; 
-      }
-    
-    this.$emit("salvar", this.heroiLocal);
+        try{
+            const response = await api.post(`/`, heroiDTO); 
+            this.heroiLocal.id = response.data.id; 
+            this.$emit("salvar", this.heroiLocal);
+        }
+        catch(error) {
+          if (error.response && error.response.status === 400) {
+            const mensagem = error.response.data || "Erro inesperado"; 
+            this.mostrarPopup = true; 
+            this.popupMensagem = mensagem;
+          }          
+          else {
+            console.error("Erro ao carregar heróis", error);
+          }            
+        }
+      }  
     }
   }
 };
@@ -229,6 +268,57 @@ button:hover {
   opacity: 1;
 }
 
+/* Container do popup */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(400px, 90vw);
+  transform: translate(-50%, -50%);
+  background: #bfc1c2ff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 1000;
+  padding: 20px;
+  text-align: center;
+  animation: fadeInScale 0.25s ease;
+}
 
+/* Texto da mensagem */
+.popup p {
+  margin-bottom: 16px;
+  font-size: 15px;
+  color: #374151;
+  line-height: 1.4;
+}
+
+/* Botão dentro do popup */
+.popup button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popup button:hover {
+  background: #1e4fd6;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+/* Animação de entrada */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
 
 </style>

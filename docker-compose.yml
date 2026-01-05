@@ -5,11 +5,47 @@ services:
     restart: always
     ports:
       - "3306:3306"
+    networks:
+      - app-network
     environment:
       MYSQL_ROOT_PASSWORD: senha
       MYSQL_USER: usuario
       MYSQL_PASSWORD: senha
       MYSQL_DATABASE: Herois
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./data:/var/lib/mysql  # Mapeamento do volume
+  
+  superhero-api:
+    build:
+      context: ./ME.SuperHero.API
+      dockerfile: Dockerfile
+    ports:
+      - "7184:7184"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:7184
+      - ConnectionStrings__DefaultConnection=Server=db;Database=Herois;User=usuario;Password=senha;
+    networks:
+      - app-network
+
+  superhero-front:
+    build:
+      context: ./ME.SuperHero.Front/me-superhero-front
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"  
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
       

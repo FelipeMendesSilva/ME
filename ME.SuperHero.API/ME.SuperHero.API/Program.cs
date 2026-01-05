@@ -3,6 +3,7 @@ using ME.SuperHero.API.IoC;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.WebHost.UseUrls("http://0.0.0.0:7184");
 
 builder.Services.AddControllers();
 

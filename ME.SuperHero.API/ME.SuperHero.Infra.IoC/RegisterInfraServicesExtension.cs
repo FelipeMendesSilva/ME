@@ -13,7 +13,11 @@ namespace ME.SuperHero.Infra.IoC
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             services.AddDbContext<AppDbContext>(options =>
-                   options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 43))));
+                   options.UseMySql(
+                       connectionString,
+                       ServerVersion.AutoDetect(connectionString),
+                       mySqlOptions => mySqlOptions.EnableRetryOnFailure()
+            ));
 
             services.AddScoped<IHeroisRepository, HeroisRepository>();
             services.AddScoped<IHeroisSuperpoderesRepository, HeroisSuperpoderesRepository>();

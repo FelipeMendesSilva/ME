@@ -69,7 +69,7 @@ export default {
       heroiLocal: {
         ...this.heroi,
         dataNascimento: this.heroi?.dataNascimento ? new Date(this.heroi.dataNascimento).toISOString().split("T")[0] : "",
-        superpoderes: this.heroi?.superpoderes 
+        superpoderes: this.heroi?.superpoderes || []
       },
       superpoderesDisponiveis: [],
       mostrarPopup: false,
@@ -88,7 +88,7 @@ export default {
     },
     adicionarPoder() {
       if(this.selectedPoder){
-        this.heroiLocal.superpoderes.push(this.selectedPoder); 
+        this.heroiLocal.superpoderes.push(this.selectedPoder);         
         this.selectedPoder = null; 
         this.carregarSuperpoderes();
       }
@@ -98,16 +98,17 @@ export default {
     },
     async salvar() {
     
-    const heroiDTO = { 
+        const heroiDTO = { 
         id: this.heroiLocal.id, 
         nome: this.heroiLocal.nome, 
         nomeHeroi: this.heroiLocal.nomeHeroi, 
         altura: this.heroiLocal.altura, 
         peso: this.heroiLocal.peso, 
+        superpoderes: Array.isArray(this.heroiLocal.superpoderes) ? this.heroiLocal.superpoderes.map(sp => typeof sp === "object" ? sp.id : sp) : [this.heroiLocal.superpoderes],
         dataNascimento: (() => { 
             const d = new Date(this.heroiLocal.dataNascimento); 
-            return isNaN(d.getTime()) ? null : this.heroiLocal.dataNascimento; })(),
-        superpoderes:this.heroiLocal.superpoderes?.map(sp => sp.id) || []
+            return isNaN(d.getTime()) ? null : this.heroiLocal.dataNascimento; })
+        
         };
       if (this.heroiLocal.id) { 
         try

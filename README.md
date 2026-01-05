@@ -11,14 +11,14 @@ Este projeto é uma solução completa de **cadastro de super-heróis**, compost
 ---
 
 ## 📂 Estrutura de Pastas
-
+```
 Na raiz do projeto você encontrará:
 
 ├── iniciar-app          # Script para iniciar toda a solução
 ├── me.superhero.api          # Projeto da API em .NET 8
 ├── me.superhero.front      # Projeto do front-end em Vue.js
 └── data                 # Pasta que guarda os dados do banco MySQL
-
+```
 
 ---
 

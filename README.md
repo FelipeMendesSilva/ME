@@ -7,6 +7,8 @@ Este projeto é uma solução completa de **cadastro de super-heróis**, compost
 - **Banco de dados** [MySQL](https://www.mysql.com/)  
 - Orquestração com **Docker** e **Docker Compose**
 
+O projeto foi desenvolvido para demonstrar uma arquitetura moderna de aplicações web, integrando front-end, back-end e banco de dados em um ambiente containerizado, facilitando a execução e portabilidade.
+
 ---
 
 ## 📂 Estrutura de Pastas
@@ -41,17 +43,16 @@ A página do Swagger da API será aberta automaticamente.
 
 A página do Front-end Vue também será aberta no navegador.
 
-🌐 Acesso às aplicações
+###🌐 Acesso às aplicações  
 Swagger (API .NET 8) → documentação e testes dos endpoints.
 
 Front-end Vue → interface para cadastro e consulta de super-heróis.
 
-⚙️ Observações importantes
+###⚙️ Observações importantes  
 É necessário aguardar o carregamento completo das aplicações antes de utilizá-las.
 
 Todos os serviços rodam em containers Docker, sem necessidade de instalação manual de dependências.
 
 Os dados persistidos ficam armazenados na pasta data (volume do MySQL).
 
-📖 Objetivo
-O projeto foi desenvolvido para demonstrar uma arquitetura moderna de aplicações web, integrando front-end, back-end e banco de dados em um ambiente containerizado, facilitando a execução e portabilidade.
+
